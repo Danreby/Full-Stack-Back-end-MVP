@@ -29,7 +29,7 @@ O objetivo é demonstrar de forma prática conceitos de desenvolvimento Full Sta
 
 ### 2. Configuração do Ambiente Virtual
 
-No terminal, dentro da pasta do projeto, execute os comandos abaixo:
+No terminal, execute os comandos abaixo:
 
 ```bash
 # Crie o ambiente virtual
