@@ -15,7 +15,6 @@ class Funcionario(Base):
     name           = Column(String(140), nullable=False)
     email          = Column(String(255), unique=True, nullable=False)
     sector_id      = Column(Integer, ForeignKey('sector.pk_sector'), nullable=False)
-    contratado_em  = Column(DateTime, default=datetime.now())
 
     sector         = relationship("Sector", backref="funcionarios")
 
@@ -24,7 +23,6 @@ class Funcionario(Base):
         name: str,
         email: str,
         sector: Union[Sector, int],
-        contratado_em: Union[DateTime, None] = None
     ):
         self.name = name
         self.email = email
@@ -32,5 +30,3 @@ class Funcionario(Base):
             self.sector = sector
         else:
             self.sector_id = sector
-        if contratado_em:
-            self.contratado_em = contratado_em

@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from model.base import Base, engine, SessionLocal as Session
 from model.funcionario import Funcionario
 from model.sectors import Sector
-
+import traceback
 # seus schemas e funções de apresentação
 from schemas import (
     FuncionarioSchema,
@@ -90,13 +90,18 @@ def get_sectors():
     responses={"200": FuncionarioViewSchema, "409": ErrorSchema, "400": ErrorSchema}
 )
 def add_funcionario(form: FuncionarioSchema):
-    """Adiciona um novo funcionário, referenciando um setor existente."""
     session = Session()
     try:
+        # 1) Busque o setor existente
+        sector = session.get(Sector, form.sector_id)
+        if not sector:
+            return {"message": "Setor não encontrado."}, 400
+
+        # 2) Passe o setor para o construtor
         funcionario = Funcionario(
             name=form.name,
             email=form.email,
-            sector_id=form.sector_id
+            sector=sector
         )
         session.add(funcionario)
         session.commit()
@@ -104,11 +109,10 @@ def add_funcionario(form: FuncionarioSchema):
 
     except IntegrityError:
         session.rollback()
-        return {"message": "Erro de integridade (verifique sector_id)."}, 409
-
-    except Exception:
+        return {"message": "Erro de integridade (verifique setor e e-mail)."}, 409
+    except Exception as e:
         session.rollback()
-        return {"message": "Não foi possível salvar o funcionário."}, 400
+        return {"message": f"Não foi possível salvar o funcionário: {e}"}, 400
 
 
 @app.get(
@@ -124,5 +128,5 @@ def get_funcionarios():
 
 
 if __name__ == '__main__':
-    # sobe o servidor em 0.0.0.0:8000
-    app.run("0.0.0.0", port=8000, debug=True)
+    # sobe o servidor em 0.0.0.0:5000
+    app.run("0.0.0.0", port=5000, debug=True)

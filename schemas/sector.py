@@ -44,7 +44,6 @@ def apresenta_sectors(sectors: List[Sector]):
                     "id": f.pk_funcionario if hasattr(f, 'pk_funcionario') else f.id,
                     "name": f.name,
                     "email": f.email,
-                    "contratado_em": f.contratado_em.isoformat(),
                 }
                 for f in getattr(s, 'funcionarios', [])
             ]
@@ -62,7 +61,6 @@ def apresenta_sector(sector: Sector):
                 "id": f.pk_funcionario if hasattr(f, 'pk_funcionario') else f.id,
                 "name": f.name,
                 "email": f.email,
-                "contratado_em": f.contratado_em.isoformat(),
             }
             for f in getattr(sector, 'funcionarios', [])
         ]

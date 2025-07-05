@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 from model.funcionario import Funcionario
@@ -7,10 +7,9 @@ from model.funcionario import Funcionario
 
 class FuncionarioSchema(BaseModel):
     """Define como um novo funcionário a ser inserido deve ser representado."""
-    name: str = "João Silva"
-    email: str = "joao.silva@example.com"
-    sector_id: int = 1
-    contratado_em: Optional[datetime] = None  # permite informar a data de contratação
+    name: str = Field(..., example="João Silva")
+    email: str = Field(..., example="joao.silva@example.com")
+    sector_id: int = Field(..., example=1)
 
 # ─── READ (single) ───────────────────────────────────────────────────
 
@@ -23,7 +22,6 @@ class FuncionarioViewSchema(BaseModel):
     id: int
     name: str
     email: str
-    contratado_em: datetime
     sector: Optional[dict] = None
 
 
@@ -50,7 +48,6 @@ def apresenta_funcionarios(funcionarios: List[Funcionario]):
             "id": f.pk_funcionario if hasattr(f, 'pk_funcionario') else f.id,
             "name": f.name,
             "email": f.email,
-            "contratado_em": f.contratado_em.isoformat(),
             "sector": {
                 "id": f.sector.pk_sector if hasattr(f.sector, 'pk_sector') else f.sector.id,
                 "name": f.sector.name,
@@ -64,7 +61,6 @@ def apresenta_funcionario(funcionario: Funcionario):
         "id": funcionario.pk_funcionario if hasattr(funcionario, 'pk_funcionario') else funcionario.id,
         "name": funcionario.name,
         "email": funcionario.email,
-        "contratado_em": funcionario.contratado_em.isoformat(),
         "sector": {
             "id": funcionario.sector.pk_sector if hasattr(funcionario.sector, 'pk_sector') else funcionario.sector.id,
             "name": funcionario.sector.name,
