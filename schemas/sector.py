@@ -58,3 +58,11 @@ def apresenta_sector(sector: Sector):
             for f in getattr(sector, 'funcionarios', [])
         ]
     }
+
+def apresenta_setor_deletado(id: int):
+    """Retorna mensagem de confirmação de remoção de setor seguindo SectorDelSchema."""
+    return {"message": "Setor removido com sucesso.", "id": id}
+
+def apresenta_setor_atualizado(sector: Sector):
+    """Retorna representação de setor atualizado seguindo SectorViewSchema."""
+    return apresenta_sector(sector)

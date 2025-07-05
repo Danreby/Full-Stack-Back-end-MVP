@@ -21,9 +21,13 @@ from schemas import (
     SectorSchema,
     SectorViewSchema,
     ListagemSectorsSchema,
+    SectorBuscaSchema,
+    SectorDelSchema,
     apresenta_sectors,
     apresenta_sector,
-
+    apresenta_setor_deletado,
+    apresenta_setor_atualizado,
+    
     ErrorSchema,
 )
 Base.metadata.create_all(bind=engine)
@@ -172,6 +176,54 @@ def update_funcionario(path: FuncionarioPathSchema, form: FuncionarioSchema):
         session.rollback()
         return {"message": f"Erro ao atualizar funcionário: {str(e)}"}, 400
 
+# ===== ROTAS DE SECTOR  – Atualização e Remoção =====
+
+@app.put(
+    '/sectors/<int:id>',
+    tags=[sector_tag],
+    responses={"200": SectorViewSchema, "404": ErrorSchema, "400": ErrorSchema, "409": ErrorSchema}
+)
+def update_sector(path: SectorBuscaSchema, form: SectorSchema):
+    """Atualiza o nome de um setor existente."""
+    session = Session()
+    sector = session.query(Sector).filter(Sector.pk_sector == path.id).first()
+    if not sector:
+        return {"message": "Setor não encontrado."}, 404
+
+    try:
+        sector.name = form.name
+        session.commit()
+        return apresenta_setor_atualizado(sector), 200
+
+    except IntegrityError:
+        session.rollback()
+        return {"message": "Já existe outro setor com esse nome."}, 409
+
+    except Exception as e:
+        session.rollback()
+        return {"message": f"Erro ao atualizar setor: {e}"}, 400
+
+
+@app.delete(
+    '/sectors/<int:id>',
+    tags=[sector_tag],
+    responses={"200": SectorDelSchema, "404": ErrorSchema, "400": ErrorSchema}
+)
+def delete_sector(path: SectorBuscaSchema):
+    """Deleta um setor pelo ID."""
+    session = Session()
+    sector = session.query(Sector).filter(Sector.pk_sector == path.id).first()
+    if not sector:
+        return {"message": "Setor não encontrado."}, 404
+
+    try:
+        session.delete(sector)
+        session.commit()
+        return apresenta_setor_deletado(path.id), 200
+
+    except Exception as e:
+        session.rollback()
+        return {"message": f"Erro ao excluir setor: {e}"}, 400
 
 
 
