@@ -14,8 +14,11 @@ from schemas import (
     FuncionarioViewSchema,
     ListagemFuncionariosSchema,
     FuncionarioDelSchema,
+    FuncionarioPathSchema,
     apresenta_funcionarios,
     apresenta_funcionario,
+    apresenta_funcionario_deletado,
+    apresenta_funcionario_atualizado,
 
     SectorSchema,
     SectorViewSchema,
@@ -113,6 +116,78 @@ def add_funcionario(form: FuncionarioSchema):
     except Exception as e:
         session.rollback()
         return {"message": f"Não foi possível salvar o funcionário: {e}"}, 400
+
+
+# ROTA DELETE FUNCIONÁRIO
+@app.delete(
+    '/funcionarios/<int:id>',
+    tags=[funcionario_tag],
+    responses={"200": FuncionarioDelSchema, "404": ErrorSchema, "400": ErrorSchema}
+)
+def delete_funcionario(path: FuncionarioPathSchema):
+    """Deleta um funcionário pelo ID."""
+    session = Session()
+    # passa a usar pk_funcionario em vez de id
+    funcionario = session.query(Funcionario) \
+                         .filter(Funcionario.pk_funcionario == path.id) \
+                         .first()
+
+    if not funcionario:
+        return {"message": "Funcionário não encontrado."}, 404
+
+    try:
+        session.delete(funcionario)
+        session.commit()
+        return {"message": "Funcionário removido com sucesso.", "id": path.id}, 200
+    except Exception as e:
+        session.rollback()
+        return {"message": f"Erro ao excluir funcionário: {str(e)}"}, 400
+
+
+# ROTA PUT (UPDATE) FUNCIONÁRIO
+from sqlalchemy.exc import IntegrityError
+
+@app.put(
+    '/funcionarios/<int:id>',
+    tags=[funcionario_tag],
+    responses={"200": FuncionarioViewSchema, "404": ErrorSchema, "400": ErrorSchema, "409": ErrorSchema}
+)
+def update_funcionario(path: FuncionarioPathSchema, form: FuncionarioSchema):
+    """Atualiza os dados de um funcionário existente."""
+    session = Session()
+    funcionario = session.query(Funcionario) \
+                         .filter(Funcionario.pk_funcionario == path.id) \
+                         .first()
+
+    if not funcionario:
+        return {"message": "Funcionário não encontrado."}, 404
+
+    try:
+        # Atualiza apenas se for diferente
+        funcionario.name = form.name
+
+        if form.email != funcionario.email:
+            funcionario.email = form.email
+
+        # Valida setor
+        sector = session.get(Sector, form.sector_id)
+        if not sector:
+            return {"message": "Setor não encontrado."}, 400
+        funcionario.sector = sector
+
+        session.commit()
+        return apresenta_funcionario(funcionario), 200
+
+    except IntegrityError:
+        session.rollback()
+        # e-mail já existe na base
+        return {"message": "Já existe outro funcionário com este e‑mail."}, 409
+
+    except Exception as e:
+        session.rollback()
+        return {"message": f"Erro ao atualizar funcionário: {str(e)}"}, 400
+
+
 
 
 @app.get(

@@ -24,7 +24,8 @@ class FuncionarioViewSchema(BaseModel):
     email: str
     sector: Optional[dict] = None
 
-
+class FuncionarioPathSchema(BaseModel):
+    id: int
 # ─── READ (list) ─────────────────────────────────────────────────────
 
 class ListagemFuncionariosSchema(BaseModel):
@@ -66,3 +67,14 @@ def apresenta_funcionario(funcionario: Funcionario):
             "name": funcionario.sector.name,
         }
     }
+
+def apresenta_funcionario_deletado(funcionario: Funcionario):
+    """Retorna mensagem de confirmação de remoção de um funcionário."""
+    return {
+        "message": f"Funcionário '{funcionario.name}' removido com sucesso.",
+        "id": funcionario.pk_funcionario if hasattr(funcionario, 'pk_funcionario') else funcionario.id
+    }
+
+def apresenta_funcionario_atualizado(funcionario: Funcionario):
+    """Retorna uma representação do funcionário atualizado."""
+    return apresenta_funcionario(funcionario)

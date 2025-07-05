@@ -15,7 +15,6 @@ class Funcionario(Base):
     name           = Column(String(140), nullable=False)
     email          = Column(String(255), unique=True, nullable=False)
     sector_id      = Column(Integer, ForeignKey('sector.pk_sector'), nullable=False)
-
     sector         = relationship("Sector", backref="funcionarios")
 
     def __init__(
