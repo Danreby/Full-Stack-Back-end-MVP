@@ -1,35 +1,27 @@
-# Minha API
+# MVP Full Stack — API e Front-end
 
-Este pequeno projeto faz parte do material diático da Disciplina **Desenvolvimento Full Stack Básico** 
+Este é um projeto **Full Stack** simples que integra **Flask** (Python) no back-end com um front-end em **HTML, CSS e JavaScript puro**.
 
-O objetivo aqui é ilutsrar o conteúdo apresentado ao longo das três aulas da disciplina.
+O objetivo é demonstrar de forma prática conceitos de desenvolvimento Full Stack, incluindo **CRUD de Funcionários e Setores**, consumo de API REST e manipulação dinâmica de interface.
 
 ---
-## Como executar 
 
+## 📂 Tecnologias Utilizadas
 
-Será necessário ter todas as libs python listadas no `requirements.txt` instaladas.
-Após clonar o repositório, é necessário ir ao diretório raiz, pelo terminal, para poder executar os comandos descritos abaixo.
+- **Back-end:** Flask + Flask-OpenAPI3 + SQLAlchemy + SQLite
+- **Front-end:** HTML5, CSS3, JavaScript (Fetch API)
+- **Documentação:** Swagger / Redoc (disponível na própria API)
 
-> É fortemente indicado o uso de ambientes virtuais do tipo [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html).
+---
 
-```
+## 🚀 Como Executar o Projeto
+
+### 1. Pré-requisitos
+
+- Python 3.8 ou superior
+- [Virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) (recomendado)
+
+### 2. Instalação das Dependências
+
+```bash
 (env)$ pip install -r requirements.txt
-```
-
-Este comando instala as dependências/bibliotecas, descritas no arquivo `requirements.txt`.
-
-Para executar a API  basta executar:
-
-```
-(env)$ flask run --host 0.0.0.0 --port 5000
-```
-
-Em modo de desenvolvimento é recomendado executar utilizando o parâmetro reload, que reiniciará o servidor
-automaticamente após uma mudança no código fonte. 
-
-```
-(env)$ flask run --host 0.0.0.0 --port 5000 --reload
-```
-
-Abra o [http://localhost:5000/#/](http://localhost:5000/#/) no navegador para verificar o status da API em execução.

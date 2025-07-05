@@ -3,12 +3,10 @@ from flask import redirect, request, jsonify
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 
-# ✅ import do engine, Base e SessionLocal (renomeado para Session aqui)
 from model.base import Base, engine, SessionLocal as Session
 from model.funcionario import Funcionario
 from model.sectors import Sector
 import traceback
-# seus schemas e funções de apresentação
 from schemas import (
     FuncionarioSchema,
     FuncionarioViewSchema,
@@ -28,15 +26,12 @@ from schemas import (
 
     ErrorSchema,
 )
-# ——— cria o banco e as tabelas se ainda não existirem ———
 Base.metadata.create_all(bind=engine)
 
-# ——— inicia a API ———
 info = Info(title="Minha API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 CORS(app)
 
-# Tags para documentação
 home_tag        = Tag(name="Documentação",   description="Seleção de UI: Swagger, Redoc ou RapiDoc")
 sector_tag      = Tag(name="Sector",         description="CRUD de setores")
 funcionario_tag = Tag(name="Funcionario",    description="CRUD de funcionários")
@@ -48,7 +43,6 @@ def home():
     return redirect('/openapi')
 
 
-# ==== ROTAS DE SECTOR ====
 
 @app.post(
     '/sectors',
@@ -85,7 +79,6 @@ def get_sectors():
     return apresenta_sectors(sectors), 200
 
 
-# ==== ROTAS DE FUNCIONARIO ====
 
 @app.post(
     '/funcionarios',
@@ -95,12 +88,10 @@ def get_sectors():
 def add_funcionario(form: FuncionarioSchema):
     session = Session()
     try:
-        # 1) Busque o setor existente
         sector = session.get(Sector, form.sector_id)
         if not sector:
             return {"message": "Setor não encontrado."}, 400
 
-        # 2) Passe o setor para o construtor
         funcionario = Funcionario(
             name=form.name,
             email=form.email,
@@ -118,7 +109,6 @@ def add_funcionario(form: FuncionarioSchema):
         return {"message": f"Não foi possível salvar o funcionário: {e}"}, 400
 
 
-# ROTA DELETE FUNCIONÁRIO
 @app.delete(
     '/funcionarios/<int:id>',
     tags=[funcionario_tag],
@@ -127,7 +117,6 @@ def add_funcionario(form: FuncionarioSchema):
 def delete_funcionario(path: FuncionarioPathSchema):
     """Deleta um funcionário pelo ID."""
     session = Session()
-    # passa a usar pk_funcionario em vez de id
     funcionario = session.query(Funcionario) \
                          .filter(Funcionario.pk_funcionario == path.id) \
                          .first()
@@ -144,7 +133,6 @@ def delete_funcionario(path: FuncionarioPathSchema):
         return {"message": f"Erro ao excluir funcionário: {str(e)}"}, 400
 
 
-# ROTA PUT (UPDATE) FUNCIONÁRIO
 from sqlalchemy.exc import IntegrityError
 
 @app.put(
@@ -163,13 +151,11 @@ def update_funcionario(path: FuncionarioPathSchema, form: FuncionarioSchema):
         return {"message": "Funcionário não encontrado."}, 404
 
     try:
-        # Atualiza apenas se for diferente
         funcionario.name = form.name
 
         if form.email != funcionario.email:
             funcionario.email = form.email
 
-        # Valida setor
         sector = session.get(Sector, form.sector_id)
         if not sector:
             return {"message": "Setor não encontrado."}, 400
@@ -180,7 +166,6 @@ def update_funcionario(path: FuncionarioPathSchema, form: FuncionarioSchema):
 
     except IntegrityError:
         session.rollback()
-        # e-mail já existe na base
         return {"message": "Já existe outro funcionário com este e‑mail."}, 409
 
     except Exception as e:
@@ -203,5 +188,4 @@ def get_funcionarios():
 
 
 if __name__ == '__main__':
-    # sobe o servidor em 0.0.0.0:5000
     app.run("0.0.0.0", port=5000, debug=True)

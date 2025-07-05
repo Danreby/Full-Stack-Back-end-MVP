@@ -3,15 +3,11 @@ from typing import List, Optional
 from datetime import datetime
 from model.funcionario import Funcionario
 
-# ─── CREATE ─────────────────────────────────────────────────────────
-
 class FuncionarioSchema(BaseModel):
     """Define como um novo funcionário a ser inserido deve ser representado."""
     name: str = Field(..., example="João Silva")
     email: str = Field(..., example="joao.silva@example.com")
     sector_id: int = Field(..., example=1)
-
-# ─── READ (single) ───────────────────────────────────────────────────
 
 class FuncionarioBuscaSchema(BaseModel):
     """Define como a busca de funcionário deve ser representada (por ID)."""
@@ -26,20 +22,16 @@ class FuncionarioViewSchema(BaseModel):
 
 class FuncionarioPathSchema(BaseModel):
     id: int
-# ─── READ (list) ─────────────────────────────────────────────────────
 
 class ListagemFuncionariosSchema(BaseModel):
     """Define como a listagem de funcionários será retornada."""
     funcionarios: List[FuncionarioViewSchema]
-
-# ─── DELETE ──────────────────────────────────────────────────────────
 
 class FuncionarioDelSchema(BaseModel):
     """Define como é a resposta de uma remoção de funcionário."""
     message: str
     id: int
 
-# ─── FUNÇÕES DE APRESENTAÇÃO ─────────────────────────────────────────
 
 def apresenta_funcionarios(funcionarios: List[Funcionario]):
     """Retorna uma representação de vários funcionários seguindo ListagemFuncionariosSchema."""
