@@ -177,8 +177,6 @@ def update_funcionario(path: FuncionarioPathSchema, form: FuncionarioSchema):
         session.rollback()
         return {"message": f"Erro ao atualizar funcionário: {str(e)}"}, 400
 
-# ===== ROTAS DE SECTOR  – Atualização e Remoção =====
-
 @app.put(
     '/sectors/<int:id>',
     tags=[sector_tag],
