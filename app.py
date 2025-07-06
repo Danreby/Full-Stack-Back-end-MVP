@@ -90,6 +90,7 @@ def get_sectors():
     responses={"200": FuncionarioViewSchema, "409": ErrorSchema, "400": ErrorSchema}
 )
 def add_funcionario(form: FuncionarioSchema):
+    """Adiciona um novo funcionario à base."""
     session = Session()
     try:
         sector = session.get(Sector, form.sector_id)
